@@ -97,7 +97,7 @@ function AddScrollBar(mainWrap, content, thumbName) {
             event.preventDefault ? event.preventDefault() : window.event.returnValue = false;
             return event.wheelDelta ? -event.wheelDelta : event.detail*40;
         }
-    }
+    };
 
     // 禁止文字选中 =======================================================
     this._selectText = function(thumb, mainBox, content) {
@@ -119,14 +119,14 @@ function AddScrollBar(mainWrap, content, thumbName) {
             for (var i=0; i<_stopSelect.length; i++) {
                 content.style[_stopSelect[i]] = "";
             }
-        }
+        };
 
         content.onblur = function() {
             for (var i=0; i<_stopSelect.length; i++) {
                 content.style[_stopSelect[i]] = thumb.style[_stopSelect[i]] = track.style[_stopSelect[i]] = "none";
             }
             window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
-        }
+        };
         
     };
 
@@ -160,12 +160,12 @@ function AddScrollBar(mainWrap, content, thumbName) {
                 
                 that.drag = top;
 
-            }
+            };
 
             document.onmouseup = function() {
                 document.onmousemove = null;
-            }
-        }
+            };
+        };
     };
 
     // 滚动 =======================================================
@@ -222,10 +222,10 @@ function AddScrollBar(mainWrap, content, thumbName) {
             var top = e.clientY+hide - thumb.offsetHeight/2;
 
             // 判断边界
-            if(top <= 0) top = 0
+            if(top <= 0) top = 0;
             if (top >= mainBox.offsetHeight - thumb.offsetHeight) {
                 top = mainBox.offsetHeight - thumb.offsetHeight;
-            }
+            } 
 
             // IE9+ target     IE10- src.Element
             var targetElement = e.target || e.srcElement;
@@ -238,14 +238,14 @@ function AddScrollBar(mainWrap, content, thumbName) {
             }
 
 
-        }
+        };
 
         thumb.onmouseover = function() {
             this.style.backgroundColor = "rgba(0, 0, 0, 0.67)";
-        }
+        };
         thumb.onmouseout = function() {
             this.style.backgroundColor = "rgb(102, 102, 102)";
-        }
+        };
     };
 
 
@@ -260,7 +260,7 @@ function AddScrollBar(mainWrap, content, thumbName) {
         this._dragScroll(this.thumb, this.mainBox, this.content, this.track);
         this._clickFollow(this.thumb, this.mainBox, this.content, this.track);
         this._wheelChange(this.thumb, this.mainBox, this.content, this.track);
-    }
+    };
     this.init();
 
 }

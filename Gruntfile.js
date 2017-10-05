@@ -19,9 +19,9 @@ module.exports = function(grunt) {
                 },
                 files: [{
                     expand: true,
-                    cwd: 'js',
-                    src: ['*.js', '!*.min.js'],
-                    dest: 'js',
+                    cwd: '',
+                    src: ['JSscrollBar.js', '!*.min.js'],
+                    dest: 'dest',
                     ext: '.min.js'
 
                 }]
@@ -74,9 +74,9 @@ module.exports = function(grunt) {
                 "eqeqeq"        : false, // 禁止使用==和!=赞成===和 !==
                 "jquery"        : true, // 使用jQuery公开的全局变量
                 "browser"       : true, // 暴露新浏览器的全局变量 如old: Window document
-                "bitwise"       : true, // 禁止位运算符 ^ | & 比如经常把&&写错& 规避此错误
-                "boss"          : true, // 禁止花括号代码块在一行
-                "immed"         : true, // 禁止使用即时函数调用(下个版本弃用)
+                "bitwise"       : false, // 禁止位运算符 ^ | & 比如经常把&&写错& 规避此错误
+                "boss"          : false, // 禁止花括号代码块在一行
+                "immed"         : false, // 禁止使用即时函数调用(下个版本弃用)
                 "evil"          : true, // 禁止使用eval,容易被各种注入攻击，并且难以进行某些优化
                 "newcap"        : true, // new 后面构造函数必须大写,为了避免直接使用函数的时候，this指向全局的对象(下个版本弃用)
                 "noempty"       : true, // 空的代码块将警告，(下个版本弃用)
@@ -132,8 +132,8 @@ module.exports = function(grunt) {
         // Automation
         watch : {
             js: {
-                files: ['*.js'],
-                tasks: ['jshint', 'uglify'],
+                files: ['JSscrollBar.js'],
+                tasks: ['uglify'],
                 options: {
                     spawn: false,
                 },
@@ -169,7 +169,7 @@ module.exports = function(grunt) {
 
 
     // Register Init Task
-    grunt.registerTask('default', ['jshint', 'watch']);
+    grunt.registerTask('default', ['watch']);
 
 
 }
