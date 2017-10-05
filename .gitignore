@@ -1,0 +1,13 @@
+.DS_STORE
+
+/dist/
+/dest/
+/.sass-cache/
+node_modules/
+bower_components/
+
+*.log
+*.cache
+*.map
+.sublime-grunt.cache
+html/css/style.css.map

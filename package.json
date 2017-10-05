@@ -1,0 +1,25 @@
+{
+  "name": "yoonasy_scrollbar",
+  "version": "0.0.2",
+  "description": "",
+  "main": "JSscrollBar.js",
+  "scripts": {
+    "test": "make run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoonasy/scrollBar.git"
+  },
+  "author": "yoonasy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yoonasy/scrollBar/issues"
+  },
+  "homepage": "https://github.com/yoonasy/scrollBar#readme",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^3.1.0",
+    "grunt-contrib-watch": "^1.0.0"
+  }
+}

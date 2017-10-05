@@ -1,8 +1,8 @@
 /**
  * 
- * @authors Your Name (you@example.org)
+ * @authors Yoonasy (you@example.org)
  * @date    2017-09-27 15:09:49
- * @version $Id$
+ * @version 0.0.1
  */
 
 // 添加事件
@@ -11,56 +11,96 @@ function addEvent(Element, type, handler) {
     Element.addEventListener ? Element.addEventListener(type, handler, false) : Element.attachEvent("on"+type, handler);
 }
 
-// 鼠标滚轮事件
-function mouseWheel(Element, handler) {
-    addEvent(Element, "mousewheel", function(e) {
-        // 获取滚动方向
-        var data = getWheelData(e);
-
-        handler(data);
-
-    });
-
-    // 火狐滚动事件
-    addEvent(Element, "DOMMouseScroll", function(e) {
-
-        // 获取滚动方向
-        var data = getWheelData(e);
-        handler(data);
-    });
-
-    function getWheelData(event) {
-        event = event || window.event;
-
-        // 阻止默认事件行为
-        event.preventDefault ? event.preventDefault() : window.event.returnValue = false;
-        return event.wheelDelta ? -event.wheelDelta : event.detail*40;
-    }
-}
-
 function getStyle(Element, attr) {
     return Element.currentStyle ? Element.currentStyle[attr] : getComputedStyle(Element)[attr];
 }
 
-function AddScrollBar() {
-    this.init.apply(this, arguments);
-}
+new AddScrollBar('mainbox', "content");
 
-AddScrollBar.prototype = {
-    drag: -1,
-    // 初始化
-    init: function(mainWrap, content, thumbName) {
-        var mainBox = document.getElementById(mainWrap);
-        var content = document.getElementById(content);
-        var thumb = this._createScroll( mainBox, content, thumbName );
-        var track = thumb.parentNode;
-        this._selectText(thumb, mainBox, content, track);
-        this._dragScroll(thumb, mainBox, content, track);
-        this._clickFollow(thumb, mainBox, content, track);
-        this._wheelChange(thumb, mainBox, content, track);
-    },
-    // 文字选中 =============================================================
-    _selectText: function(thumb, mainBox, content) {
+function AddScrollBar(mainWrap, content, thumbName) {
+    // 创建滚动条 =======================================================
+    this._createScroll = function() {
+        var thumb = document.createElement("div");
+        var track = document.createElement("div");
+
+        if (typeof thumbName === "string") {
+            thumb.className = thumbName;
+
+        } else if(typeof thumbName == "object") {
+            for (var key in thumbName) {
+                if (key === "className") {
+                    thumb.className = thumbName.className;
+                }
+                thumb.style[key] = thumbName[key];
+            }
+            track.style.width = "18px";
+            track.style.right = 0;
+            track.style.top = 0;
+            track.style.position = "absolute";
+            track.style.transition = "top 50ms linear";
+            track.style.backgroundColor = "#ccc";
+        } else {
+            thumb.style.width = "18px";
+            thumb.style.position = "absolute";
+            thumb.style.borderRadius = "9px";
+            thumb.style.backgroundColor = "#666";
+            track.style.width = "18px";
+            track.style.right = 0;
+            track.style.top = 0;
+            track.style.position = "absolute";
+            track.style.transition = "top 50ms linear";
+            track.style.backgroundColor = "#ccc";
+        }
+        
+        track.appendChild(thumb);
+        this.mainBox.appendChild(track);
+
+        track.style.height = this.mainBox.offsetHeight + "px";
+        this.content.style.position = 'absolute';
+        var cPadding = parseInt(getStyle(this.content, "padding-left"))+parseInt(getStyle(this.content, "padding-right"));
+        // 调整位置
+        this.content.style.width = this.mainBox.offsetWidth - track.offsetWidth - cPadding + "px";
+        var scrollHeight = parseInt( (this.mainBox.offsetHeight / this.content.offsetHeight * this.mainBox.offsetHeight).toFixed(2) );
+        if (scrollHeight >= this.mainBox.offsetHeight) {
+            track.style.display = "none";
+            this.content.style.width = "";
+        }
+
+        thumb.style.height = scrollHeight+"px";
+        console.log(scrollHeight);
+        return thumb;
+    };
+
+
+    // 鼠标滚轮事件 =======================================================
+    this.mouseWheel = function(Element, handler) {
+        addEvent(Element, "mousewheel", function(e) {
+            // 获取滚动方向
+            var data = getWheelData(e);
+
+            handler(data);
+
+        });
+
+        // 火狐滚动事件
+        addEvent(Element, "DOMMouseScroll", function(e) {
+
+            // 获取滚动方向
+            var data = getWheelData(e);
+            handler(data);
+        });
+
+        function getWheelData(event) {
+            event = event || window.event;
+
+            // 阻止默认事件行为
+            event.preventDefault ? event.preventDefault() : window.event.returnValue = false;
+            return event.wheelDelta ? -event.wheelDelta : event.detail*40;
+        }
+    }
+
+    // 禁止文字选中 =======================================================
+    this._selectText = function(thumb, mainBox, content) {
         var track = thumb.parentNode;
         content.setAttribute("tabIndex", 1);
         var _stopSelect = [];
@@ -88,61 +128,11 @@ AddScrollBar.prototype = {
             window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
         }
         
-    },
-    // 创建滚动条并调整初始样式 ===========================================
-    _createScroll: function(mainBox, content, thumbName) {
-        var thumb = document.createElement("div");
-        var track = document.createElement("div");
+    };
 
-        if (typeof thumbName === "string") {
-            thumb.className = thumbName;
-
-        } else if(typeof thumbName == "object") {
-            for (var key in thumbName) {
-                if (key === "className") {
-                    thumb.className = thumbName.className;
-                }
-                thumb.style[key] = thumbName[key];
-            }
-            track.style.width = "18px";
-            track.style.right = 0;
-            track.style.position = "absolute";
-            track.style.transition = "top 50ms linear";
-            track.style.backgroundColor = "#ccc";
-        } else {
-            thumb.style.width = "18px";
-            thumb.style.position = "absolute";
-            thumb.style.borderRadius = "9px";
-            thumb.style.backgroundColor = "#666";
-            track.style.width = "18px";
-            track.style.right = 0;
-            track.style.position = "absolute";
-            track.style.transition = "top 50ms linear";
-            track.style.backgroundColor = "#ccc";
-        }
-        
-        track.appendChild(thumb);
-        mainBox.appendChild(track);
-
-        track.style.height = mainBox.offsetHeight + "px";
-
-        var cPadding = parseInt(getStyle(content, "padding-left"))+parseInt(getStyle(content, "padding-right"));
-        // 调整位置
-        content.style.width = mainBox.offsetWidth - track.offsetWidth - cPadding + "px";
-        var scrollHeight = parseInt( (mainBox.offsetHeight / content.offsetHeight * mainBox.offsetHeight).toFixed(2) );
-        if (scrollHeight >= mainBox.offsetHeight) {
-            track.style.display = "none";
-            content.style.width = "";
-        }
-
-        thumb.style.height = scrollHeight+"px";
-        console.log(scrollHeight);
-
-
-        return thumb;
-    },
     // 拖拽滚动条 =======================================================
-    _dragScroll: function(thumb, mainBox, content, track) {
+    this._dragScroll= function(thumb, mainBox, content, track) {
+        var that = this;
         thumb.onmousedown = function(e){
             e = e || event;
             // 初始位置
@@ -168,7 +158,7 @@ AddScrollBar.prototype = {
                 // 内容区域联动     求往上滚动的x      x : 全长 = top : 可视
                 content.style.top = -top * content.offsetHeight / mainBox.offsetHeight + "px";
                 
-                this.drag = top;
+                that.drag = top;
 
             }
 
@@ -176,9 +166,49 @@ AddScrollBar.prototype = {
                 document.onmousemove = null;
             }
         }
-    },
-    // 按下导轨滑块跟随
-    _clickFollow: function(thumb, mainBox, content, track) {
+    };
+
+    // 滚动 =======================================================
+    this._wheelChange = function(thumb, mainBox, content, track) {
+        var that = this;
+        var scrollSign = 0;
+        var _top = 0;
+        this.mouseWheel(mainBox, function(data) {
+            // 记录滚动叠加的滚动值  120为单位
+            scrollSign+= data;
+
+            // 判断是否拖拽或点击导轨   需要处理拖拽或点击的值
+            if (that.drag>=0) {
+                // 点击或拖拽滚动条的值加上当前的一次值 避免延迟滚动一格
+                scrollSign = (that.drag*12) + data;
+                // 最终top值
+                _top = scrollSign/12;
+                // 处理完拖拽或点击的数据   还原this.drag
+                that.drag = -1;
+
+            } else {
+                _top = scrollSign/12;
+            }
+
+            // 判断边界
+            if(_top<=0) {
+                _top = 0;
+                scrollSign = 0;
+            }
+            if (_top>=mainBox.offsetHeight-thumb.offsetHeight) {
+                _top = mainBox.offsetHeight-thumb.offsetHeight;
+                scrollSign = (mainBox.offsetHeight-thumb.offsetHeight)*12;
+            }
+
+            thumb.style.top = _top + "px";
+            content.style.top = -_top*content.offsetHeight / mainBox.offsetHeight + "px";
+        });
+
+    };
+
+    // 点击导轨 =======================================================
+    this._clickFollow = function(thumb, mainBox, content, track) {
+        var that = this;
         track.onmousedown = function(e) {
             e = e || event;
 
@@ -204,7 +234,7 @@ AddScrollBar.prototype = {
                 thumb.style.top = top+"px";
                 // 内容联动
                 content.style.top = -top * content.offsetHeight / mainBox.offsetHeight + "px";
-                this.drag = top;
+                that.drag = top;
             }
 
 
@@ -216,42 +246,22 @@ AddScrollBar.prototype = {
         thumb.onmouseout = function() {
             this.style.backgroundColor = "rgb(102, 102, 102)";
         }
-    },
-    // 滚动
-    _wheelChange: function(thumb, mainBox, content, track) {
-        var scrollSign = 0;
-        var _top = 0;
-        mouseWheel(mainBox, function(data) {
-            // 记录滚动叠加的滚动值  120为单位
-            scrollSign+= data;
+    };
 
-            // 判断是否拖拽或点击导轨   需要处理拖拽或点击的值
-            if (this.drag>=0) {
-                // 点击或拖拽滚动条的值加上当前的一次值 避免延迟滚动一格
-                scrollSign = (this.drag*12) + data;
-                // 最终top值
-                _top = scrollSign/12;
-                // 处理完拖拽或点击的数据   还原this.drag
-                this.drag = -1;
 
-            } else {
-                _top = scrollSign/12;
-            }
-
-            // 判断边界
-            if(_top<=0) {
-                _top = 0;
-                scrollSign = 0;
-            }
-            if (_top>=mainBox.offsetHeight-thumb.offsetHeight) {
-                _top = mainBox.offsetHeight-thumb.offsetHeight;
-                scrollSign = (mainBox.offsetHeight-thumb.offsetHeight)*12;
-            }
-
-            thumb.style.top = _top + "px";
-            content.style.top = -_top*content.offsetHeight / mainBox.offsetHeight + "px";
-        });
-
+    // 初始化 =======================================================
+    this.drag = -1;
+    this.mainBox = document.getElementById(mainWrap);
+    this.content = document.getElementById(content);
+    this.thumb = this._createScroll( this.mainBox, this.content, thumbName );
+    this.track = this.thumb.parentNode;
+    this.init = function() {
+        this._selectText(this.thumb, this.mainBox, this.content, this.track);
+        this._dragScroll(this.thumb, this.mainBox, this.content, this.track);
+        this._clickFollow(this.thumb, this.mainBox, this.content, this.track);
+        this._wheelChange(this.thumb, this.mainBox, this.content, this.track);
     }
+    this.init();
 
 }
+
